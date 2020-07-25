@@ -21,6 +21,7 @@ from django.utils.translation import ugettext as _
 from taiga.base import exceptions as exc
 from taiga.base import filters
 from taiga.base import response
+
 from taiga.base.api import ModelCrudViewSet
 from taiga.base.api import ModelListViewSet
 from taiga.base.api.mixins import BlockedByProjectMixin
@@ -37,6 +38,7 @@ from taiga.projects.notifications.mixins import WatchersViewSetMixin
 from taiga.projects.notifications.services import analize_object_for_watchers
 from taiga.projects.notifications.services import send_notifications
 from taiga.projects.occ import OCCResourceMixin
+from taiga.base.api.viewsets import ViewSet
 
 from . import models
 from . import permissions
@@ -47,7 +49,6 @@ from . import utils as wiki_utils
 
 class WikiViewSet(OCCResourceMixin, HistoryResourceMixin, WatchedResourceMixin,
                   BlockedByProjectMixin, ModelCrudViewSet):
-
     model = models.WikiPage
     serializer_class = serializers.WikiPageSerializer
     validator_class = validators.WikiPageValidator
@@ -131,3 +132,14 @@ class WikiLinkViewSet(BlockedByProjectMixin, ModelCrudViewSet):
                 history = take_snapshot(wiki_page, user=self.request.user)
                 analize_object_for_watchers(wiki_page, history.comment, history.owner)
                 send_notifications(wiki_page, history=history)
+
+
+# Newly added API.
+class CustomWikiPageViewSet(ViewSet):
+    """Retrieve the list wiki-pages written by given user id"""
+
+    def retrieve(self, request, pk=None):
+        wiki_pages = models.WikiPage.objects.filter(owner_id=pk)
+        serializer = serializers.WikiPageSerializer(wiki_pages, many=True)
+        print(serializer.data)
+        return response.Ok(serializer.data)
