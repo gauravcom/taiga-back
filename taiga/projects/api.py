@@ -65,6 +65,7 @@ from . import services
 from . import utils as project_utils
 from . import throttling
 
+
 ######################################################
 # Project
 ######################################################
@@ -75,7 +76,7 @@ class ProjectViewSet(LikedResourceMixin, HistoryResourceMixin,
                      TagsColorsResourceMixin, ModelCrudViewSet):
     validator_class = validators.ProjectValidator
     queryset = models.Project.objects.all()
-    permission_classes = (permissions.ProjectPermission, )
+    permission_classes = (permissions.ProjectPermission,)
     filter_backends = (project_filters.UserOrderFilterBackend,
                        project_filters.QFilterBackend,
                        project_filters.CanViewProjectObjFilterBackend,
@@ -578,7 +579,6 @@ class ProjectWatchersViewSet(WatchersViewSetMixin, ModelListViewSet):
 
 class EpicStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
                         ModelCrudViewSet, BulkUpdateOrderMixin):
-
     model = models.EpicStatus
     serializer_class = serializers.EpicStatusSerializer
     validator_class = validators.EpicStatusValidator
@@ -600,7 +600,6 @@ class EpicStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
 
 class UserStoryStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
                              ModelCrudViewSet, BulkUpdateOrderMixin):
-
     model = models.UserStoryStatus
     serializer_class = serializers.UserStoryStatusSerializer
     validator_class = validators.UserStoryStatusValidator
@@ -622,7 +621,6 @@ class UserStoryStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
 
 class PointsViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
                     ModelCrudViewSet, BulkUpdateOrderMixin):
-
     model = models.Points
     serializer_class = serializers.PointsSerializer
     validator_class = validators.PointsValidator
@@ -643,7 +641,6 @@ class PointsViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
 
 
 class UserStoryDueDateViewSet(BlockedByProjectMixin, ModelCrudViewSet):
-
     model = models.UserStoryDueDate
     serializer_class = serializers.UserStoryDueDateSerializer
     validator_class = validators.UserStoryDueDateValidator
@@ -698,7 +695,6 @@ class UserStoryDueDateViewSet(BlockedByProjectMixin, ModelCrudViewSet):
 
 class TaskStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
                         ModelCrudViewSet, BulkUpdateOrderMixin):
-
     model = models.TaskStatus
     serializer_class = serializers.TaskStatusSerializer
     validator_class = validators.TaskStatusValidator
@@ -719,7 +715,6 @@ class TaskStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
 
 
 class TaskDueDateViewSet(BlockedByProjectMixin, ModelCrudViewSet):
-
     model = models.TaskDueDate
     serializer_class = serializers.TaskDueDateSerializer
     validator_class = validators.TaskDueDateValidator
@@ -775,7 +770,6 @@ class TaskDueDateViewSet(BlockedByProjectMixin, ModelCrudViewSet):
 
 class SeverityViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
                       ModelCrudViewSet, BulkUpdateOrderMixin):
-
     model = models.Severity
     serializer_class = serializers.SeveritySerializer
     validator_class = validators.SeverityValidator
@@ -859,7 +853,6 @@ class IssueStatusViewSet(MoveOnDestroyMixin, BlockedByProjectMixin,
 
 
 class IssueDueDateViewSet(BlockedByProjectMixin, ModelCrudViewSet):
-
     model = models.IssueDueDate
     serializer_class = serializers.IssueDueDateSerializer
     validator_class = validators.IssueDueDateValidator
@@ -1089,3 +1082,14 @@ class InvitationViewSet(ModelListViewSet):
 
     def list(self, *args, **kwargs):
         raise exc.PermissionDenied(_("You don't have permisions to see that."))
+
+
+# Newly added API's
+class CustomMembershipViewSet(ViewSet):
+    """
+    A ViewSet for retrieving list of members having same project Id.
+    """
+    def retrieve(self, request, pk=None):
+        project_details = models.Membership.objects.filter(project_id=pk)
+        serializer = serializers.MembershipSerializer(project_details, many=True)
+        return response.Ok(serializer.data)

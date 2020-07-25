@@ -39,7 +39,7 @@ from .permissions import AuthPermission
 from .throttling import LoginFailRateThrottle, RegisterSuccessRateThrottle
 
 
-def _parse_data(data:dict, *, cls):
+def _parse_data(data: dict, *, cls):
     """
     Generic function for parse user data using
     specified validator on `cls` keyword parameter.
@@ -54,6 +54,7 @@ def _parse_data(data:dict, *, cls):
     if not validator.is_valid():
         raise exc.RequestValidationError(validator.errors)
     return validator.data
+
 
 # Parse public register data
 parse_public_register_data = partial(_parse_data, cls=PublicRegisterValidator)
@@ -107,6 +108,7 @@ class AuthViewSet(viewsets.ViewSet):
         auth_plugins = get_auth_plugins()
 
         login_type = request.DATA.get("type", None)
+        print(login_type)
         invitation_token = request.DATA.get("invitation_token", None)
 
         if login_type in auth_plugins:

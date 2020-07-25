@@ -51,7 +51,7 @@ class IssueViewSet(AssignedToSignalMixin, OCCResourceMixin, VotedResourceMixin,
                    ModelCrudViewSet):
     validator_class = validators.IssueValidator
     queryset = models.Issue.objects.all()
-    permission_classes = (permissions.IssuePermission, )
+    permission_classes = (permissions.IssuePermission,)
     filter_backends = (filters.CanViewIssuesFilterBackend,
                        filters.RoleFilter,
                        filters.OwnersFilter,
@@ -153,7 +153,6 @@ class IssueViewSet(AssignedToSignalMixin, OCCResourceMixin, VotedResourceMixin,
         include_attachments = "include_attachments" in self.request.QUERY_PARAMS
         qs = attach_extra_info(qs, user=self.request.user,
                                include_attachments=include_attachments)
-
         return qs
 
     def pre_save(self, obj):
@@ -267,6 +266,7 @@ class IssueViewSet(AssignedToSignalMixin, OCCResourceMixin, VotedResourceMixin,
         ret = services.update_issues_milestone_in_bulk(data["bulk_issues"], milestone)
 
         return response.Ok(ret)
+
 
 class IssueVotersViewSet(VotersViewSetMixin, ModelListViewSet):
     permission_classes = (permissions.IssueVotersPermission,)

@@ -51,6 +51,7 @@ from .signals import user_cancel_account as user_cancel_account_signal
 from .signals import user_change_email as user_change_email_signal
 from .throttling import UserDetailRateThrottle, UserUpdateRateThrottle
 
+
 class UsersViewSet(ModelCrudViewSet):
     permission_classes = (permissions.UserPermission,)
     admin_serializer_class = serializers.UserAdminSerializer
@@ -330,7 +331,6 @@ class UsersViewSet(ModelCrudViewSet):
         user.cancel()
         return response.NoContent()
 
-
     @list_route(methods=["POST"])
     def export(self, request, pk=None):
         """
@@ -342,7 +342,6 @@ class UsersViewSet(ModelCrudViewSet):
             "url": file_url
         }
         return response.Ok(response_data)
-
 
     @detail_route(methods=["GET"])
     def contacts(self, request, *args, **kwargs):
@@ -420,7 +419,8 @@ class UsersViewSet(ModelCrudViewSet):
             "user_likes": services.get_liked_content_for_user(request.user),
         }
 
-        response_data = [serializers.LikedObjectSerializer(into_namedtuple(elem), **extra_args).data for elem in elements]
+        response_data = [serializers.LikedObjectSerializer(into_namedtuple(elem), **extra_args).data for elem in
+                         elements]
 
         return response.Ok(response_data)
 
@@ -443,7 +443,8 @@ class UsersViewSet(ModelCrudViewSet):
             "user_votes": services.get_voted_content_for_user(request.user),
         }
 
-        response_data = [serializers.VotedObjectSerializer(into_namedtuple(elem), **extra_args).data for elem in elements]
+        response_data = [serializers.VotedObjectSerializer(into_namedtuple(elem), **extra_args).data for elem in
+                         elements]
 
         return response.Ok(response_data)
 
@@ -455,7 +456,7 @@ class RolesViewSet(BlockedByProjectMixin, ModelCrudViewSet):
     model = models.Role
     serializer_class = serializers.RoleSerializer
     validator_class = validators.RoleValidator
-    permission_classes = (permissions.RolesPermission, )
+    permission_classes = (permissions.RolesPermission,)
     filter_backends = (filters.CanViewProjectFilterBackend,)
     filter_fields = ('project',)
 

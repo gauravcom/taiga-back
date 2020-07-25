@@ -17,3 +17,5 @@ static
 .\#*
 .project
 .env
+.idea/
+venv/
