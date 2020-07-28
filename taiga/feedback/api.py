@@ -58,3 +58,8 @@ class FeedbackViewSet(viewsets.ViewSet):
         services.send_feedback(self.object, extra, reply_to=[request.user.email])
 
         return response.Ok(validator.data)
+
+    def retrieve(self, request, pk=None):
+        feedback = models.FeedbackEntry.objects.get(id=pk)
+        serializer = serializers.FeedbackSerializer(feedback)
+        return response.Ok(serializer.data)
