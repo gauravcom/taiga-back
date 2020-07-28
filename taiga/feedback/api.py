@@ -22,6 +22,8 @@ from taiga.base.api import viewsets
 from . import permissions
 from . import validators
 from . import services
+from . import models
+from . import serializers
 
 import copy
 
@@ -29,6 +31,11 @@ import copy
 class FeedbackViewSet(viewsets.ViewSet):
     permission_classes = (permissions.FeedbackPermission,)
     validator_class = validators.FeedbackEntryValidator
+
+    def list(self, request):
+        queryset = models.FeedbackEntry.objects.filter(full_name=request.user)
+        serializer = serializers.FeedbackSerializer(queryset, many=True)
+        return response.Ok(serializer.data)
 
     def create(self, request, **kwargs):
         self.check_permissions(request, "create", None)

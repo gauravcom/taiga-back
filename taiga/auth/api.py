@@ -108,7 +108,6 @@ class AuthViewSet(viewsets.ViewSet):
         auth_plugins = get_auth_plugins()
 
         login_type = request.DATA.get("type", None)
-        print(login_type)
         invitation_token = request.DATA.get("invitation_token", None)
 
         if login_type in auth_plugins:
