@@ -18,6 +18,7 @@
 
 from taiga.base import response
 from taiga.base.api import viewsets
+from django.utils.translation import ugettext as _
 
 from . import permissions
 from . import validators
@@ -51,7 +52,7 @@ class FeedbackViewSet(viewsets.ViewSet):
         self.object = validator.save(force_insert=True)
 
         extra = {
-            "HTTP_HOST":  request.META.get("HTTP_HOST", None),
+            "HTTP_HOST": request.META.get("HTTP_HOST", None),
             "HTTP_REFERER": request.META.get("HTTP_REFERER", None),
             "HTTP_USER_AGENT": request.META.get("HTTP_USER_AGENT", None),
         }
@@ -63,3 +64,18 @@ class FeedbackViewSet(viewsets.ViewSet):
         feedback = models.FeedbackEntry.objects.get(id=pk)
         serializer = serializers.FeedbackSerializer(feedback)
         return response.Ok(serializer.data)
+
+    def update(self, request, pk=None):
+        feedback = models.FeedbackEntry.objects.get(id=pk)
+
+        print(request.DATA)
+        serializer = serializers.FeedbackSerializer(feedback, data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Ok(serializer.data)
+        return response.BadRequest(_("The feedback id doesn't exist"))
+
+    def delete(self, request, pk):
+        feedback = models.FeedbackEntry.objects.get(id=pk)
+        feedback.delete()
+        return response.NoContent()
