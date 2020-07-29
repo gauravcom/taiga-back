@@ -23,3 +23,7 @@ from taiga.base.api.permissions import IsAuthenticated
 
 class FeedbackPermission(TaigaResourcePermission):
     create_perms = IsAuthenticated()
+    list_perms = IsAuthenticated()
+    retrieve_perms = IsAuthenticated()
+    update_perms = IsAuthenticated()
+    destroy_perms = IsAuthenticated()

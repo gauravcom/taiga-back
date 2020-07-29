@@ -19,6 +19,7 @@
 from taiga.base import response
 from taiga.base.api import viewsets
 from django.utils.translation import ugettext as _
+from taiga.base.api.permissions import IsAuthenticated
 
 from . import permissions
 from . import validators
@@ -34,6 +35,7 @@ class FeedbackViewSet(viewsets.ViewSet):
     validator_class = validators.FeedbackEntryValidator
 
     def list(self, request):
+        self.check_permissions(request, "list", None)
         queryset = models.FeedbackEntry.objects.filter(full_name=request.user)
         serializer = serializers.FeedbackSerializer(queryset, many=True)
         return response.Ok(serializer.data)
@@ -61,14 +63,17 @@ class FeedbackViewSet(viewsets.ViewSet):
         return response.Ok(validator.data)
 
     def retrieve(self, request, pk=None):
-        feedback = models.FeedbackEntry.objects.get(id=pk)
+        self.check_permissions(request, "retrieve", None)
+        try:
+            feedback = models.FeedbackEntry.objects.get(id=pk)
+        except Exception as e:
+            return response.BadRequest(_("The feedback id doesn't exist"))
         serializer = serializers.FeedbackSerializer(feedback)
         return response.Ok(serializer.data)
 
     def update(self, request, pk=None):
+        self.check_permissions(request, "update", None)
         feedback = models.FeedbackEntry.objects.get(id=pk)
-
-        print(request.DATA)
         serializer = serializers.FeedbackSerializer(feedback, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
@@ -76,6 +81,10 @@ class FeedbackViewSet(viewsets.ViewSet):
         return response.BadRequest(_("The feedback id doesn't exist"))
 
     def delete(self, request, pk):
-        feedback = models.FeedbackEntry.objects.get(id=pk)
+        self.check_permissions(request, "delete", None)
+        try:
+            feedback = models.FeedbackEntry.objects.get(id=pk)
+        except Exception as e:
+            return response.BadRequest(_("The feedback id doesn't exist"))
         feedback.delete()
         return response.NoContent()
